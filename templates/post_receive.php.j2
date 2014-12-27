@@ -1,0 +1,6 @@
+<?php
+  // Post receive hook script
+  if ( $_REQUEST['payload'] ) {
+    shell_exec( 'cd {{ web_root }} && git reset --hard HEAD && git pull && rm cache/class_index.php' );
+  }
+?>OK

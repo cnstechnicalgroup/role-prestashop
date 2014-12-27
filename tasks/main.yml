@@ -1,0 +1,42 @@
+---
+- name: Install git
+  apt: pkg={{ item }} state=latest update_cache=true
+  with_items:
+    - git
+
+- name: Add group "prestashop"
+  group: name=prestashop
+
+- name: Add user "prestashop"
+  user: name=prestashop group=prestashop home=/home/prestashop
+
+- name: Ensure .ssh directory exists
+  file: path="/home/prestashop/.ssh" state=directory mode=0700 owner="prestashop" group="prestashop"
+
+- name: Copy aws deploy key
+  action: copy src="{{ prestashop_deploy_key }}" dest=/home/prestashop/.ssh/id_rsa owner=prestashop group=prestashop mode=0600
+
+- name: Create PrestaShop installation folder (web_root)
+  file: path="{{ web_root }}" owner=prestashop group=prestashop state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
+
+- name: git checkout prestashop production for site
+  git: repo="{{ gitrepo }}"
+       dest="{{ web_root }}"
+       ssh_opts="-o StrictHostKeyChecking=no -vvvv"
+       accept_hostkey=True
+  sudo: yes
+  sudo_user: prestashop
+
+- name: Copy PrestaShop config file
+  template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner=prestashop group=prestashop
+
+- name: Copy post_receive.php as github post receive webhook
+  template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php"
+  sudo: yes
+  sudo_user: prestashop
+
+- name: Ensure cache(s) writable
+  file: dest="{{ item }}" state=directory mode=0775 recurse=yes owner=prestashop group=prestashop
+  with_items:
+    - "{{ web_root }}/cache/cachefs"
+    - "{{ web_root }}/cache/smarty/cache"
