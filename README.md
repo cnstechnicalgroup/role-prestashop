@@ -23,6 +23,10 @@ In the current version, you can specify the following variables:
 | ps_db_name            |   ---   | PrestaShop database name.                                    |
 | ps_db_user            |   ---   | PrestaShop database usernem.                                 |
 | ps_db_password        |   ---   | PrestaShop database password.                                |
+| cache_system          |   ---   | PrestaShop cache system (File System, Memcached, APC, Xcache)|
+| cache_enabled         |   ---   | Enable cache? 1=on, 0=off                                    |
+| creation_date         |   ---   | Original deploy date.                                        |
+| ps_version            |   ---   | Target PrestaShop version.                                   |
 | site_public_url       |   ---   | Site URL. The primary site URL.                              |
 | cdn_endpoint          |   ---   | Primary CDN end-point.                                       |
 | cookie_key            |   ---   | Cookie blowfish key.                                         |
