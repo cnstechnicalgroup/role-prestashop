@@ -8,19 +8,19 @@
   group: name="{{ app_name }}"
 
 - name: Add system user
-  user: name"{{ app_name }}" group"{{ app_name }}" home=/home/{{ app_name }}
+  user: name="{{ app_name }}" group="{{ app_name }}" home="/home/{{ app_name }}"
 
 - name: Ensure .ssh directory exists
-  file: path="/home/{{ app_name }}/.ssh" state=directory mode=0700 owner"{{ app_name }}" group"{{ app_name }}"
+  file: path="/home/{{ app_name }}/.ssh" state=directory mode=0700 owner="{{ app_name }}" group="{{ app_name }}"
 
 - name: Copy aws deploy key
-  action: copy src="{{ prestashop_deploy_key }}" dest=/home/{{ app_name }}/.ssh/id_rsa owner"{{ app_name }}" group"{{ app_name }}" mode=0600
+  action: copy src="{{ prestashop_deploy_key }}" dest="/home/{{ app_name }}/.ssh/id_rsa" owner="{{ app_name }}" group="{{ app_name }}" mode=0600
 
 - name: gitconfig template
-  template: src=gitconfig.j2 dest="/home/{{ app_name }}/.gitconfig" owner"{{ app_name }}" group"{{ app_name }}"
+  template: src=gitconfig.j2 dest="/home/{{ app_name }}/.gitconfig" owner="{{ app_name }}" group="{{ app_name }}"
 
 - name: Create PrestaShop installation folder (web_root)
-  file: path="{{ web_root }}" owner"{{ app_name }}" group"{{ app_name }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
+  file: path="{{ web_root }}" owner="{{ app_name }}" group="{{ app_name }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
 
 - name: git checkout repository for site
   git: repo="{{ gitrepo }}"
@@ -31,13 +31,13 @@
   sudo_user: "{{ app_name }}"
 
 - name: Copy config file
-  template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner"{{ app_name }}" group"{{ app_name }}"
+  template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ app_name }}" group="{{ app_name }}"
 
 - name: Copy post_receive.php as github post receive webhook
-  template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php" owner"{{ app_name }}" group"{{ app_name }}"
+  template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php" owner="{{ app_name }}" group="{{ app_name }}"
 
 - name: Ensure cache(s) writable
-  file: dest="{{ item }}" state=directory mode=0775 recurse=yes owner"{{ app_name }}" group"{{ app_name }}"
+  file: dest="{{ item }}" state=directory mode=0775 recurse=yes owner="{{ app_name }}" group="{{ app_name }}"
   with_items:
     - "{{ web_root }}/cache/cachefs"
     - "{{ web_root }}/cache/smarty/cache"
