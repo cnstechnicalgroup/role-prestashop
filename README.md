@@ -47,15 +47,14 @@ GPLv2
 Author Information
 ------------------
 
-Created by Sam Morrison
-https://www.twitter.com/samcns
+Created by Sam Morrison [@samcns](https://www.twitter.com/samcns)
 
 Examples
 --------
 
 ```yaml
 ---
-- name: common role test
+- name: cns.prestashop role test
   hosts: all
   roles:
     - cns.prestashop

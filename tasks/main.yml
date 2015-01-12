@@ -19,7 +19,7 @@
 - name: gitconfig template
   template: src=gitconfig.j2 dest="/home/{{ app_name }}/.gitconfig" owner="{{ app_name }}" group="{{ app_name }}"
 
-- name: Create PrestaShop installation folder (web_root)
+- name: Create installation folder (web_root)
   file: path="{{ web_root }}" owner="{{ app_name }}" group="{{ app_name }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
 
 - name: git checkout repository for site
@@ -30,7 +30,7 @@
   sudo: yes
   sudo_user: "{{ app_name }}"
 
-- name: Copy config file
+- name: Create app config file
   template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ app_name }}" group="{{ app_name }}"
 
 - name: Copy post_receive.php as github post receive webhook
