@@ -33,8 +33,13 @@
 - name: Create app config file
   template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ app_name }}" group="{{ app_name }}"
 
+- name: Copy Link.php overrides for production only
+  template: src=Link.php.j2 dest="{{ web_root }}/override/classes/Link.php" owner="{{ app_name }}" group="{{ app_name }}"
+  when: mode == "prod"
+
 - name: Copy post_receive.php as github post receive webhook
   template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php" owner="{{ app_name }}" group="{{ app_name }}"
+  when: mode == "dev"
 
 - name: Ensure cache(s) writable
   file: dest="{{ item }}" state=directory mode=0775 recurse=yes owner="{{ app_name }}" group="{{ app_name }}"
