@@ -14,7 +14,7 @@
   file: path="/home/{{ app_name }}/.ssh" state=directory mode=0700 owner="{{ app_name }}" group="{{ app_name }}"
 
 - name: Copy aws deploy key
-  action: copy src="{{ prestashop_deploy_key }}" dest="/home/{{ app_name }}/.ssh/id_rsa" owner="{{ app_name }}" group="{{ app_name }}" mode=0600
+  action: copy src="{{ prestashop_deploy_key }}" dest="/home/{{ app_name }}/.ssh/{{ prefix }}" owner="{{ app_name }}" group="{{ app_name }}" mode=0600
 
 - name: gitconfig template
   template: src=gitconfig.j2 dest="/home/{{ app_name }}/.gitconfig" owner="{{ app_name }}" group="{{ app_name }}"
@@ -27,6 +27,7 @@
        dest="{{ web_root }}"
        ssh_opts="-o StrictHostKeyChecking=no -vvvv"
        accept_hostkey=True
+       key_file="/home/{{ app_name }}/.ssh/{{ prefix }}"
   sudo: yes
   sudo_user: "{{ app_name }}"
 
