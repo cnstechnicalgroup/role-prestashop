@@ -47,3 +47,14 @@
   with_items:
     - "{{ web_root }}/cache/cachefs"
     - "{{ web_root }}/cache/smarty/cache"
+
+- name: Copy site robots.txt
+  file: src="robots.txt" dest="{{ web_root }}/robots.txt" owner="{{ app_name }}" group="{{ app_name }}"
+  tags:
+    - robotstxt
+
+- name: Add Disallow / for dev sites
+  lineinfile: "dest={{ web_root }}/robots.txt regexp='^Disallow: /$' line='Disallow: /' insertafter='^User-agent'"
+  when: mode == "dev"
+  tags:
+    - robotstxt
