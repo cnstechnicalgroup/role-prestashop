@@ -37,7 +37,7 @@ In the current version, you can specify the following variables:
 Dependencies
 ------------
 
-This package has no dependencies.
+Place `robots.txt` in the site playbook `files/` folder. This role will deploy that file to `{{ web_root }}/robots.txt` and add `Disallow: /` to dev deployments.
 
 License
 -------
