@@ -6,6 +6,7 @@
     $repo = Git::open('{{ web_root }}');
     $repo->add('themes/**/modules/**/translations/*.php');
     $repo->add('modules/**/translations/*.php');
+    $repo->add('override/');
     $repo->commit('Commiting translation file modifications');
     $repo->push('origin', 'master');
     echo $repo->status(true);
