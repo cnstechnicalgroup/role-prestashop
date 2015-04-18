@@ -19,6 +19,7 @@ In the current version, you can specify the following variables:
 | prestashop_deploy_key |   ---   | git deploy key for site repository (use vault).              |
 | web_root              |   ---   | Main root for prestashop install.                            |
 | git_repo              |   ---   | Full git repository URL for site checkout.                   |
+| git_whitelist         |   ---   | Client IP addresses allowed to access server-side git scripts|
 | mysql_server_hostname |   ---   | MySQL server host / proxy name.                              |
 | ps_db_name            |   ---   | PrestaShop database name.                                    |
 | ps_db_user            |   ---   | PrestaShop database usernem.                                 |
