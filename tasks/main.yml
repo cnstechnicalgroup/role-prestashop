@@ -43,7 +43,7 @@
   when: mode == "dev"
 
 - name: Copy Git.php script. Required for git-status.php and git-commit.php
-  file: path="{{ web_root }}/Git.php" owner="{{ system_user }}" group="{{ system_group }}" 
+  copy: src="Git.php" dest="{{ web_root }}/Git.php" owner="{{ system_user }}" group="{{ system_group }}" 
 
 - name: Generate git-status.php for server-side git status check 
   template: src=git-status.php.j2 dest="{{ web_root }}/git-status.php" owner="{{ system_user }}" group="{{ system_group }}"
