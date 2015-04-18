@@ -50,7 +50,7 @@
   when: mode == "dev"
 
 - name: Generate git-commit.php for server-side git commit of modified files
-  template: src=git-status.php.j2 dest="{{ web_root }}/git-commit.php" owner="{{ system_user }}" group="{{ system_group }}"
+  template: src=git-commit.php.j2 dest="{{ web_root }}/git-commit.php" owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == "dev"
 
 - name: Ensure cache(s) writable
