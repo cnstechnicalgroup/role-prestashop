@@ -1,0 +1,12 @@
+<?php
+  // git commit server-side changes
+  $whitelist = array({{ git_whitelist }});
+  if (in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $whitelist)) {
+    require_once('Git.php');
+    $repo = Git::open('{{ web_root }}');
+    $repo->add('themes/**/modules/**/translations/*.php');
+    $repo->commit('Commiting translation file modifications');
+    $repo->push('origin', 'master');
+    echo $repo->status(true);
+  }
+?>

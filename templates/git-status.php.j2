@@ -1,0 +1,9 @@
+<?php
+  // Print git status output
+  $whitelist = array({{ git_whitelist }});
+  if (in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $whitelist)) {
+    require_once('Git.php');
+    $repo = Git::open('{{ web_root }}');
+    echo $repo->status(true);
+  }
+?>
