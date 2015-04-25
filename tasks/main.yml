@@ -60,7 +60,7 @@
     - "{{ web_root }}/cache/smarty/cache"
 
 - name: Copy site robots.txt
-  file: src="robots.txt" dest="{{ web_root }}/robots.txt" owner="{{ app_name }}" group="{{ app_name }}"
+  copy: src="robots.txt" dest="{{ web_root }}/robots.txt" owner="{{ app_name }}" group="{{ app_name }}"
   tags:
     - robotstxt
 
