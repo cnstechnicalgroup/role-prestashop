@@ -27,6 +27,7 @@
        dest="{{ web_root }}"
        ssh_opts="-o StrictHostKeyChecking=no -vvvv"
        accept_hostkey=True
+       force=true
        key_file="/home/{{ app_name }}/.ssh/{{ prefix }}"
   sudo: yes
   sudo_user: "{{ app_name }}"
