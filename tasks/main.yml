@@ -5,26 +5,31 @@
     - git
 
 - name: Add system group
-  group: name="{{ app_name }}"
+  group: name="{{ system_user }}"
 
 - name: Add system user
-  user: name="{{ app_name }}" group="{{ app_name }}" home="/home/{{ app_name }}"
+  user: name="{{ system_user }}" group="{{ system_group }}" home="/home/{{ system_user }}"
 
 - name: Ensure .ssh directory exists
-  file: path="/home/{{ app_name }}/.ssh" state=directory mode=0700 owner="{{ app_name }}" group="{{ app_name }}"
+  file: path="/home/{{ system_user }}/.ssh" state=directory mode=0700 owner="{{ system_user }}" group="{{ system_group }}"
 
 - name: Copy aws deploy key
-  action: copy src="{{ prestashop_deploy_key }}" dest="/home/{{ app_name }}/.ssh/{{ prefix }}" owner="{{ app_name }}" group="{{ app_name }}" mode=0600
+  action: copy src="{{ prestashop_deploy_key }}" dest="/home/{{ system_user }}/.ssh/{{ prefix }}" owner="{{ system_user }}" group="{{ system_group }}" mode=0600
 
 - name: gitconfig template
-  template: src=gitconfig.j2 dest="/home/{{ app_name }}/.gitconfig" owner="{{ app_name }}" group="{{ app_name }}"
+  template: src=gitconfig.j2 dest="/home/{{ system_user }}/.gitconfig" owner="{{ system_user }}" group="{{ system_group }}"
 
 - name: Set cache/class_index.php mutable
   command: "chattr -i {{ web_root }}/cache/class_index.php"
   become: yes
+  when: mode == "prod"
+
+- name: Delete cache/class_index.php
+  file: "{{ web_root }}/cache/class_index.php"
+  state: absent
 
 - name: Create installation folder (web_root)
-  file: path="{{ web_root }}" owner="{{ app_name }}" group="{{ app_name }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
+  file: path="{{ web_root }}" owner="{{ system_user }}" group="{{ system_group }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
 
 - name: git checkout repository for site
   git: repo="{{ gitrepo }}"
@@ -32,23 +37,24 @@
        ssh_opts="-o StrictHostKeyChecking=no -vvvv"
        accept_hostkey=True
        force=true
-       key_file="/home/{{ app_name }}/.ssh/{{ prefix }}"
+       key_file="/home/{{ system_user }}/.ssh/{{ prefix }}"
   become: yes
-  become_user: "{{ app_name }}"
+  become_user: "{{ system_user }}"
 
 - name: Create app config file
-  template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ app_name }}" group="{{ app_name }}"
+  template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ system_user }}" group="{{ system_group }}"
 
 - name: Copy Link.php overrides for production only
-  template: src=Link.php.j2 dest="{{ web_root }}/override/classes/Link.php" owner="{{ app_name }}" group="{{ app_name }}"
+  template: src=Link.php.j2 dest="{{ web_root }}/override/classes/Link.php" owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == "prod"
 
 - name: Copy post_receive.php as github post receive webhook
-  template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php" owner="{{ app_name }}" group="{{ app_name }}"
+  template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php" owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == "dev"
 
 - name: Copy Git.php script. Required for git-status.php and git-commit.php
   copy: src="Git.php" dest="{{ web_root }}/Git.php" owner="{{ system_user }}" group="{{ system_group }}" 
+  when: mode == "dev"
 
 - name: Generate git-status.php for server-side git status check 
   template: src=git-status.php.j2 dest="{{ web_root }}/git-status.php" owner="{{ system_user }}" group="{{ system_group }}"
@@ -59,13 +65,13 @@
   when: mode == "dev"
 
 - name: Ensure cache(s) writable
-  file: dest="{{ item }}" state=directory mode=0775 recurse=yes owner="{{ app_name }}" group="{{ app_name }}"
+  file: dest="{{ item }}" state=directory mode=0775 recurse=yes owner="{{ system_user }}" group="{{ system_group }}"
   with_items:
     - "{{ web_root }}/cache/cachefs"
     - "{{ web_root }}/cache/smarty/cache"
 
 - name: Copy site robots.txt
-  copy: src="robots.txt" dest="{{ web_root }}/robots.txt" owner="{{ app_name }}" group="{{ app_name }}"
+  copy: src="robots.txt" dest="{{ web_root }}/robots.txt" owner="{{ system_user }}" group="{{ system_group }}"
   tags:
     - robotstxt
 
@@ -75,6 +81,10 @@
   tags:
     - robotstxt
 
+- name: Regenerate cache/class_index.php
+  local_action: command "curl --silent http://{{ site_public_url }} > /dev/null"
+
 - name: Set cache/class_index.php immutable
   command: "chattr +i {{ web_root }}/cache/class_index.php"
   become: yes
+  when: mode == "prod"
