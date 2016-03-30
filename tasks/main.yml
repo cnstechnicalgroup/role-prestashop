@@ -19,6 +19,10 @@
 - name: gitconfig template
   template: src=gitconfig.j2 dest="/home/{{ app_name }}/.gitconfig" owner="{{ app_name }}" group="{{ app_name }}"
 
+- name: Set cache/class_index.php mutable
+  command: "chattr -i {{ web_root }}/cache/class_index.php"
+  become: yes
+
 - name: Create installation folder (web_root)
   file: path="{{ web_root }}" owner="{{ app_name }}" group="{{ app_name }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
 
@@ -27,9 +31,10 @@
        dest="{{ web_root }}"
        ssh_opts="-o StrictHostKeyChecking=no -vvvv"
        accept_hostkey=True
+       force=true
        key_file="/home/{{ app_name }}/.ssh/{{ prefix }}"
-  sudo: yes
-  sudo_user: "{{ app_name }}"
+  become: yes
+  become_user: "{{ app_name }}"
 
 - name: Create app config file
   template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ app_name }}" group="{{ app_name }}"
@@ -69,3 +74,7 @@
   when: mode == "dev"
   tags:
     - robotstxt
+
+- name: Set cache/class_index.php immutable
+  command: "chattr +i {{ web_root }}/cache/class_index.php"
+  become: yes
