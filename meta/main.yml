@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: cnstechnicalgroup
+  description: Ansible role to install and configures prestashop.
+  company: CNS Technical Group, Inc.
+  license: GPL2
+  min_ansible_version: 2.2
+  categories:
+  - web, ecommerce
+dependencies: []
