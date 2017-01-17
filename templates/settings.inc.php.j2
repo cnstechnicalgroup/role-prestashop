@@ -3,16 +3,28 @@
     $_SERVER['HTTPS'] = 'on';
     $_SERVER['SERVER_PORT'] = 443;
   }
+{% if item %}
+define('_DB_SERVER_', '{{ item.value }}');
+{% else %}
 define('_DB_SERVER_', '{{ mysql_server_hostname }}');
+{% endif %}
 define('_DB_NAME_', '{{ ps_db_name }}');
 define('_DB_USER_', '{{ ps_db_user }}');
 define('_DB_PASSWD_', '{{ ps_db_password }}');
 define('_DB_PREFIX_', 'ps_');
 define('_MYSQL_ENGINE_', 'InnoDB');
+{% if item is defined and item.key == 'stage' %}
+define('_PS_BASE_URL_', 'https://{{ site_public_url_stage }}');
+{% else %}
 define('_PS_BASE_URL_', 'https://{{ site_public_url }}');
+{% endif %}
 define('_PS_CACHING_SYSTEM_', '{{ cache_system }}');
 define('_PS_CACHE_ENABLED_', '{{ cache_enabled }}');
+{% if item is defined and item.key == 'stage' %}
+define('_MEDIA_SERVER_1_', '{{ cdn_endpoint_stage }}');
+{% else %}
 define('_MEDIA_SERVER_1_', '{{ cdn_endpoint }}');
+{% endif %}
 define('_MEDIA_SERVER_2_', '');
 define('_MEDIA_SERVER_3_', '');
 define('_COOKIE_KEY_', '{{ cookie_key }}');
