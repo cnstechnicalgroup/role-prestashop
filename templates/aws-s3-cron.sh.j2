@@ -1,0 +1,24 @@
+# Check Instance tags:
+INSTANCE_ID=$(wget -qO- http://instance-data/latest/meta-data/instance-id);
+REGION=$(wget -qO- http://instance-data/latest/meta-data/placement/availability-zone | sed 's/.$//');
+MODE=$(aws ec2 describe-tags \
+           --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=Mode" \
+           --region "$REGION" --output=text | cut -f5);
+
+if [[ "$MODE" == 'prod' ]]; then
+  S3_BUCKET="{{ s3_prod }}";
+else
+  S3_BUCKET="{{ s3_stage }}";
+fi;
+
+# aws s3 img sync
+/usr/bin/aws s3 sync /srv/{{ domain }}/img/ s3://${S3_BUCKET}/img --acl public-read > /dev/null;
+
+#aws s3 modules sync
+/usr/bin/aws s3 sync /srv/{{ domain }}/modules/ s3://${S3_BUCKET}/modules --acl public-read > /dev/null;
+
+# aws s3 js sync"
+/usr/bin/aws s3 sync /srv/{{ domain }}/js/ s3://${S3_BUCKET}/js --acl public-read > /dev/null;
+
+# aws s3 themes sync
+/usr/bin/aws s3 sync /srv/{{ domain }}/themes/ s3://${S3_BUCKET}/themes --acl public-read > /dev/null;

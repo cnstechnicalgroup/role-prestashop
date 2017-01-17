@@ -43,7 +43,7 @@ class Link extends LinkCore
                 return $this->protocol_content.Tools::getMediaServer($uri_path).$uri_path;
         }
 
-        public function getModuleLink($module, $controller = 'default', array $params = array(), $ssl = false, $id_lang = null, $id_shop = null)
+        public function getModuleLink($module, $controller = 'default', array $params = array(), $ssl = false, $id_lang = null, $id_shop = null, $relative_protocol = false)
         {
           $base = 'https://';
 
