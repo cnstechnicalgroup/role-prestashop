@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Check Instance tags:
 INSTANCE_ID=$(wget -qO- http://instance-data/latest/meta-data/instance-id);
 REGION=$(wget -qO- http://instance-data/latest/meta-data/placement/availability-zone | sed 's/.$//');

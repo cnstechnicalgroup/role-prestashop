@@ -84,7 +84,7 @@
 - name: Create aws-s3-cron cronjob
   cron:
     minute: "*/3"
-    job: "pgrep awscli > /dev/null || /home/{{ system_user }}/aws-s3-cron.sh > /dev/null"
+    job: "pgrep aws > /dev/null || /home/{{ system_user }}/aws-s3-cron.sh > /dev/null"
 
 - name: Copy post_receive.php as github post receive webhook
   template: src=post_receive.php.j2 dest="{{ web_root }}/post_receive.php" owner="{{ system_user }}" group="{{ system_group }}"
