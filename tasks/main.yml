@@ -22,6 +22,11 @@
   template: src=gitconfig.j2 dest="/home/{{ system_user }}/.gitconfig" owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == "dev"
 
+- name: Set psconfigs directory
+  set_fact:
+    psconfigs: "/opt/efs/psconfigs"
+  when: psconfigs is undefined
+
 - name: Set cache/class_index.php mutable
   command: "chattr -i {{ web_root }}/cache/class_index.php"
   become: yes
@@ -48,24 +53,37 @@
   when: mode == "dev"
 
 - name: Ensure ~/psconfigs directory exists
-  file: path="/home/{{ system_user }}/psconfigs" state=directory mode=0700 owner="{{ system_user }}" group="{{ system_group }}"
+  file: path="{{ psconfigs }}" state=directory mode=0700 owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == 'stage'
 
-- name: Create app config file (stage)
+- name: Create app config file (stage) [PS 1.6.x]
   template:
     src: settings.inc.php.j2
-    dest: "/home/{{ system_user }}/psconfigs/settings.inc-{{ item.key }}.php"
+    dest: "{{ psconfigs }}/settings.inc-{{ item.key }}.php"
     owner: "{{ system_user }}"
     group: "{{ system_group }}"
   with_dict: "{{ db_hosts }}"
-  when: db_hosts is defined and mode == "stage"
+  when: db_hosts is defined and mode == "stage" and ps_version != '1.7'
 
-- name: Create app config file
+- name: Create app config file (dev) [PS 1.6.x]
   template: src=settings.inc.php.j2 dest="{{ web_root }}/config/settings.inc.php" owner="{{ system_user }}" group="{{ system_group }}"
-  when: mode == "dev"
+  when: mode == "dev" and ps_version != '1.7'
+
+- name: Create app config file (stage) [PS 1.7.x]
+  template:
+    src: parameters.php.j2
+    dest: "{{ psconfigs }}/parameters-{{ item.key }}.php"
+    owner: "{{ system_user }}"
+    group: "{{ system_group }}"
+  with_dict: "{{ db_hosts }}"
+  when: db_hosts is defined and mode == "stage" and ps_version == '1.7'
+
+- name: Create app config file (dev) [PS 1.7.x]
+  template: src=parameters.php.j2 dest="{{ web_root }}/app/config/parameters.php" owner="{{ system_user }}" group="{{ system_group }}"
+  when: mode == "dev" and ps_version == '1.7'
 
 - name: Copy Link.php overrides (stage / prod)
-  copy: src=Link.php dest="/home/{{ system_user }}/psconfigs/Link.php" owner="{{ system_user }}" group="{{ system_group }}"
+  copy: src=Link.php dest="{{ psconfigs }}/Link.php" owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == "stage"
 
 - name: Copy Link.php overrides for production only
@@ -110,7 +128,7 @@
   when: mode == "dev"
 
 - name: Copy site robots.txt (stage)
-  copy: src="robots.txt" dest="/home/{{ system_user }}/psconfigs/robots.txt" owner="{{ system_user }}" group="{{ system_group }}"
+  copy: src="robots.txt" dest="{{ psconfigs }}/robots.txt" owner="{{ system_user }}" group="{{ system_group }}"
   when: mode == "stage"
 
 - name: Copy site robots.txt

@@ -1,0 +1,30 @@
+<?php return array (
+  'parameters' =>
+  array (
+    'force_ssl' => true,
+{% if item %}
+    'database_host' => '{{ item.value }}',
+{% else %}
+    'database_host' => '{{ mysql_server_hostname }}',
+{% endif %}
+    'database_port' => '',
+    'database_name' => '{{ ps_db_name }}',
+    'database_user' => '{{ ps_db_user }}',
+    'database_password' => '{{ ps_db_password }}',
+    'database_prefix' => 'ps_',
+    'database_engine' => 'InnoDB',
+    'mailer_transport' => 'smtp',
+    'mailer_host' => '127.0.0.1',
+    'mailer_user' => NULL,
+    'mailer_password' => NULL,
+    'secret' => '{{ secret }}',
+    'ps_caching' => '{{ cache_system }}',
+    'ps_cache_enable' => '{{ cache_enabled }}',
+    'ps_creation_date' => '{{ creation_date }}',
+    'locale' => 'en-US',
+    'cookie_key' => '{{ cookie_key }}',
+    'cookie_iv' => '{{ cookie_iv }}', 
+    'new_cookie_key' => '{{ new_cookie_key }}',        
+    'theme_name' => 'default',                                               
+  ),
+);
